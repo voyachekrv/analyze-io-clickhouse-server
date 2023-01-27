@@ -1,0 +1,13 @@
+version: "3.9"
+services:
+  clickhouse:
+    image: yandex/clickhouse-server
+    ports:
+      - "8123:8123"
+    volumes:
+      - ./db:/var/lib/clickhouse
+    networks:
+      - clickhouse
+networks:
+  clickhouse:
+    driver: bridge
