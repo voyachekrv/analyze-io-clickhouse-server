@@ -1,5 +1,5 @@
 import { ClickHouse } from 'clickhouse';
-import { ClickhouseConfig } from './config';
+import { ClickhouseTestConfig } from './test-config';
 
 /**
  * Применение миграции
@@ -9,7 +9,7 @@ const up = async (clickhouse: ClickHouse) => {
 	await clickhouse
 		.query(
 			`
-	CREATE TABLE default.visit
+	CREATE TABLE default.visit_test
 	(
 		id String,
 		createdAt DateTime,
@@ -34,14 +34,14 @@ const up = async (clickhouse: ClickHouse) => {
  * @param clickhouse Подключение к БД
  */
 const down = async (clickhouse: ClickHouse) => {
-	await clickhouse.query('DROP TABLE default.visit;').toPromise();
+	await clickhouse.query('DROP TABLE default.visit_test;').toPromise();
 };
 
 /**
- * Миграция базы данных
+ * Миграция тестовой базы данных
  */
-const migrations = async () => {
-	const clickhouse: ClickHouse = new ClickHouse({ ...ClickhouseConfig });
+const migrationsTest = async () => {
+	const clickhouse: ClickHouse = new ClickHouse({ ...ClickhouseTestConfig });
 
 	if (process.argv[2] === 'up') {
 		await up(clickhouse);
@@ -52,4 +52,4 @@ const migrations = async () => {
 	}
 };
 
-migrations().then();
+migrationsTest().then();

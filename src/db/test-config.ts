@@ -1,12 +1,12 @@
 /* eslint-disable camelcase */
 import { config } from 'dotenv';
 
-config({ path: '.env' });
+config({ path: '.env.test' });
 
 /**
- * Параметры подключения к базе данных Clickhouse
+ * Параметры подключения к тестовой базе данных Clickhouse
  */
-export const ClickhouseConfig = {
+export const ClickhouseTestConfig = {
 	url: process.env.DATABASE_ADDRESS || 'http://localhost',
 	port: process.env.DATABASE_PORT || 8123,
 	debug: false,
