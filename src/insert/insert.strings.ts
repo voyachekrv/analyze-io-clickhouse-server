@@ -1,3 +1,6 @@
+/**
+ * Строки модуля вставки
+ */
 export enum InsertStrings {
 	SHOULD_BE_STRING = 'Поле должно быть строкой',
 	SHOULD_BE_NOT_EMPTY = 'Поле не должно быть пустым',
