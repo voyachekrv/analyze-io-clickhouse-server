@@ -4,6 +4,9 @@ import { InsertModule } from './insert/insert.module';
 import { ConnectorModule } from './connector/connector.module';
 import { ClickhouseConfig } from './db/config';
 
+/**
+ * Основной модуль приложения
+ */
 @Module({
 	imports: [
 		ConfigModule.forRoot({

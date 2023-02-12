@@ -1,6 +1,9 @@
 import { DynamicModule, Module } from '@nestjs/common';
 import { ConnectorService } from './connector.service';
 
+/**
+ * Модуль подключения к Clickhouse
+ */
 @Module({
 	providers: [ConnectorService],
 	exports: [ConnectorService]

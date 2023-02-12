@@ -5,6 +5,10 @@ import { ConfigModule } from '@nestjs/config';
 import { ConnectorModule } from '../src/connector/connector.module';
 import { InsertModule } from '../src/insert/insert.module';
 
+/**
+ * Сборка тестового экземпляра приложения
+ * @returns Тестовый экземпляр приложения
+ */
 export const testNestApplication = async (): Promise<INestApplication> => {
 	const clickhouseConfigOptions = ClickhouseTestConfig;
 
