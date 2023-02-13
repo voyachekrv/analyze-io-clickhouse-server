@@ -13,8 +13,16 @@ export class ConnectorService {
 	 * Сервис подключений к Clickhouse
 	 * @param properties Параметры подключения
 	 */
-	constructor(properties: object) {
+	constructor(properties: object | Promise<object>) {
 		this.connection = new ClickHouse(properties);
+
+		// Проверка подключения к базе данных
+		this.connection
+			.query('SELECT version();')
+			.toPromise()
+			.catch(e => {
+				throw new Error(e);
+			});
 	}
 
 	/**
