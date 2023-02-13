@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { InsertModule } from './insert/insert.module';
 import { ConnectorModule } from './connector/connector.module';
-import { ClickhouseConfig } from './db/config';
+import { configFactory } from './db/config-factory';
 
 /**
  * Основной модуль приложения
@@ -13,7 +13,11 @@ import { ClickhouseConfig } from './db/config';
 			envFilePath: '.env',
 			isGlobal: true
 		}),
-		ConnectorModule.forRoot(ClickhouseConfig),
+		ConnectorModule.forRootAsync({
+			imports: [ConfigModule],
+			inject: [ConfigService],
+			useFactory: configFactory
+		}),
 		InsertModule
 	],
 	controllers: [],
