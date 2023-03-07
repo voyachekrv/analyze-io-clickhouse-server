@@ -1,22 +1,20 @@
 import { DynamicModule, Module, Provider } from '@nestjs/common';
-import { ConnectorService } from './connector.service';
-import { ConnectorModuleAsyncOptions } from './connector-module-async-options';
+import { ClickhouseService } from './clickhouse.service';
+import { ClickhouseModuleAsyncOptions } from './clickhouse-module-async-options';
+import { ClickHouseClientConfigOptions } from '@clickhouse/client';
 
 /**
  * Модуль подключения к Clickhouse
  */
-@Module({
-	providers: [ConnectorService],
-	exports: [ConnectorService]
-})
-export class ConnectorModule {
+@Module({})
+export class ClickhouseModule {
 	/**
 	 * Создание асинхронного провайдера настроек подключения к БД
 	 * @param options Настройки модуля для асинхронного подключения
 	 * @returns Провайдер настроек
 	 */
 	private static createAsyncOptionsProvider(
-		options: ConnectorModuleAsyncOptions
+		options: ClickhouseModuleAsyncOptions
 	): Provider {
 		return {
 			provide: 'AsyncOptionsProvider',
@@ -30,40 +28,40 @@ export class ConnectorModule {
 	 * @param props Свойства подключения
 	 * @returns Модуль подключения к БД
 	 */
-	static forRoot(props: object = {}): DynamicModule {
+	static forRoot(props: ClickHouseClientConfigOptions): DynamicModule {
 		const connectionFactory = {
-			provide: 'ConnectorService',
-			useValue: new ConnectorService(props)
+			provide: 'ClickhouseService',
+			useValue: new ClickhouseService(props)
 		};
 
 		return {
 			global: true,
-			module: ConnectorModule,
+			module: ClickhouseModule,
 			providers: [connectionFactory],
 			exports: [connectionFactory]
 		};
 	}
 
 	/**
-	 * Асинхронная астройка модуля подключения к БД
+	 * Асинхронная настройка модуля подключения к БД
 	 * @param options Свойства подключения
 	 * @returns Модуль подключения к БД
 	 */
-	static forRootAsync(options: ConnectorModuleAsyncOptions): DynamicModule {
+	static forRootAsync(options: ClickhouseModuleAsyncOptions): DynamicModule {
 		const moduleData = {
 			global: true,
-			module: ConnectorModule,
+			module: ClickhouseModule,
 			providers: [],
 			exports: []
 		};
 
 		const asyncProvider = this.createAsyncOptionsProvider(options);
-
 		moduleData.providers.push(asyncProvider);
 
 		const connectionFactory = {
-			provide: 'ConnectorService',
-			useValue: new ConnectorService(
+			provide: 'ClickhouseService',
+			inject: moduleData.providers[0].inject[0],
+			useValue: new ClickhouseService(
 				options.useFactory(new moduleData.providers[0].inject[0]())
 			)
 		};

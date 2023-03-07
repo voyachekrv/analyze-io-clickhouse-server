@@ -1,6 +1,7 @@
 version: "3.9"
 services:
   clickhouse:
+    container_name: analyze-io-clickhouse-db
     image: yandex/clickhouse-server
     ports:
       - "8123:8123"
@@ -8,6 +9,19 @@ services:
       - ./db:/var/lib/clickhouse
     networks:
       - clickhouse
+
+  analyze-io-clickhouse-server:
+    container_name: analyze-io-clickhouse-app
+    image: analyze-io-clickhouse-server
+    depends_on:
+      - clickhouse
+    env_file:
+       - .env
+    ports:
+       - "8000:3002"
+    networks:
+       - clickhouse  
+
 networks:
   clickhouse:
     driver: bridge

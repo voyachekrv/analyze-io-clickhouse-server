@@ -1,9 +1,9 @@
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { ConnectorModule } from '../src/connector/connector.module';
+import { clickhouseClientFactory } from '../src/clickhouse-client-factory';
 import { InsertModule } from '../src/insert/insert.module';
-import { configFactory } from '../src/db/config-factory';
+import { ClickhouseModule } from '../src/nestjs-clickhouse/clickhouse.module';
 
 /**
  * Сборка тестового экземпляра приложения
@@ -16,10 +16,10 @@ export const testNestApplication = async (): Promise<INestApplication> => {
 				envFilePath: '.env.test',
 				isGlobal: true
 			}),
-			ConnectorModule.forRootAsync({
+			ClickhouseModule.forRootAsync({
 				imports: [ConfigModule],
 				inject: [ConfigService],
-				useFactory: configFactory
+				useFactory: clickhouseClientFactory
 			}),
 			InsertModule
 		]

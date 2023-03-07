@@ -10,6 +10,7 @@ import {
 import { InsertService } from './insert.service';
 import { VisitInsertDto } from './visit.insert.dto';
 import { Request } from 'express';
+import { InsertResultDto } from 'src/utils/insert.result.dto';
 
 /**
  * Контроллер вставки записи в аналитическую базу данных
@@ -30,7 +31,7 @@ export class InsertController {
 		@Req() req: Request,
 		@Param('shopId') shopId: string,
 		@Body() dto: VisitInsertDto
-	): Promise<void> {
-		await this.insertService.insert(dto, req.ip, shopId);
+	): Promise<InsertResultDto> {
+		return await this.insertService.insert(dto, req.ip, shopId);
 	}
 }

@@ -1,11 +1,15 @@
 import {
+	Inject,
 	Injectable,
 	InternalServerErrorException,
 	Logger
 } from '@nestjs/common';
-import { ConnectorService } from '../connector/connector.service';
 import { VisitInsertDto } from './visit.insert.dto';
 import { ConfigService } from '@nestjs/config';
+import { ClickhouseService } from '../nestjs-clickhouse/clickhouse.service';
+import * as uuid4 from 'uuid4';
+import { DateTime } from 'luxon';
+import { InsertResultDto } from '../utils/insert.result.dto';
 
 /**
  * Сервис вставки записи в аналитическую базу данных
@@ -14,12 +18,13 @@ import { ConfigService } from '@nestjs/config';
 export class InsertService {
 	/**
 	 * Сервис вставки записи в аналитическую базу данных
-	 * @param connectorService Сервис подключений к Clickhouse
+	 * @param clickhouseService Сервис подключений к Clickhouse
 	 * @param configService Сервис конфигурации
 	 */
 	constructor(
-		private readonly connectorService: ConnectorService,
-		private readonly configService: ConfigService
+		private readonly configService: ConfigService,
+		@Inject('ClickhouseService')
+		private readonly clickhouseService: ClickhouseService
 	) {}
 
 	/**
@@ -27,29 +32,46 @@ export class InsertService {
 	 * @param dto DTO создания записи о посещении
 	 * @param clientIp IP клиента
 	 * @param shopId UUID магазина в аналитической БД
+	 * @returns ID запроса
 	 */
 	public async insert(
 		dto: VisitInsertDto,
-		clientIp: string,
+		ip: string,
 		shopId: string
-	): Promise<void> {
+	): Promise<InsertResultDto> {
 		Logger.log(
 			`inserting visit, visitorId: ${dto.visitorId}, item: ${dto.item}; price: ${dto.price}, priceCurrency: ${dto.priceCurrency}`,
 			this.constructor.name
 		);
 
-		const sql = `INSERT INTO default.${this.configService.get<string>(
-			'DATABASE_NAME'
-		)} (id, createdAt, shopId, ip, visitorId, item, price, priceCurrency) VALUES (generateUUIDv4(), now(), '${shopId}', '${clientIp}', '${
-			dto.visitorId
-		}', '${dto.item}', ${dto.price}, '${dto.priceCurrency}');`;
-
-		Logger.log(`query: ${sql}`, this.constructor.name);
-
 		try {
-			// eslint-disable-next-line newline-per-chained-call
-			await this.connectorService.getConnection().query(sql).toPromise();
+			const result = await this.clickhouseService.insert({
+				table: this.configService.get<string>(
+					'DATABASE_TABLE',
+					'default'
+				),
+				values: [
+					{
+						id: uuid4(),
+						createdAt: DateTime.now().toFormat(
+							'yyyy-MM-dd HH:mm:ss'
+						),
+						shopId,
+						ip,
+						...dto
+					}
+				],
+				format: 'JSONEachRow'
+			});
+
+			Logger.log(
+				`Successful inserted, query id: ${result.query_id}`,
+				this.constructor.name
+			);
+
+			return { queryId: result.query_id };
 		} catch (e) {
+			Logger.error(e, this.constructor.name);
 			throw new InternalServerErrorException(e.message);
 		}
 	}

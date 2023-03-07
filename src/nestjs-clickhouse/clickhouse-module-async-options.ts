@@ -1,11 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+import { ClickHouseClientConfigOptions } from '@clickhouse/client';
 import { ModuleMetadata } from '@nestjs/common';
 
 /**
  * Настройки для асинхронного подключения модуля базы данных
  */
-export interface ConnectorModuleAsyncOptions
+export interface ClickhouseModuleAsyncOptions
 	extends Pick<ModuleMetadata, 'imports'> {
 	/**
 	 * Внедряемые провайдеры
@@ -17,5 +18,7 @@ export interface ConnectorModuleAsyncOptions
 	 * @param args Внедренные провайдеры
 	 * @returns Настройки подключения к БД
 	 */
-	useFactory?: (...args: any[]) => Promise<object> | object;
+	useFactory?: (
+		...args: any[]
+	) => ClickHouseClientConfigOptions | Promise<ClickHouseClientConfigOptions>;
 }
