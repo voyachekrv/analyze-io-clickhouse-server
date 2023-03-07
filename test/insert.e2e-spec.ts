@@ -52,7 +52,13 @@ describe('InsertController (e2e)', () => {
 		return request(app.getHttpServer())
 			.post(`/insert/${shopId}`)
 			.send(insertDto)
-			.expect(201);
+			.expect(201)
+			.then(({ body }: request.Response) => {
+				expect(body).toBeDefined();
+				expect(body.queryId).toBeDefined();
+				expect(body.queryId).toBeTruthy();
+				expect(body.queryId.length).toBeGreaterThan(0);
+			});
 	});
 
 	/**

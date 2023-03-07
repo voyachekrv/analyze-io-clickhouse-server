@@ -19,23 +19,25 @@
 		"test:cov": "jest --coverage",
 		"test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
 		"test:e2e": "jest --config ./test/jest-e2e.json",
-		"database:migrate": "nest build && node ./dist/db/migrations.js up",
-		"database:migrate:drop": "node ./dist/db/migrations.js down",
-		"database:test-setup": "nest build && node ./dist/db/migrations-test.js up",
-		"database:test-teardown": "node ./dist/db/migrations-test.js down"
+		"database:migrate": "nest build && node ./dist/migrator/migrations.js up",
+		"database:migrate:drop": "node ./dist/migrator/migrations.js down",
+		"database:test-setup": "nest build && node ./dist/migrator/migrations-test.js up",
+		"database:test-teardown": "node ./dist/migrator/migrations-test.js down"
 	},
 	"dependencies": {
+		"@clickhouse/client": "^0.0.12",
 		"@nestjs/common": "^9.0.0",
 		"@nestjs/config": "^2.2.0",
 		"@nestjs/core": "^9.0.0",
 		"@nestjs/platform-express": "^9.0.0",
 		"class-transformer": "^0.5.1",
 		"class-validator": "^0.14.0",
-		"clickhouse": "^2.6.0",
 		"dotenv": "^16.0.3",
+		"luxon": "^3.3.0",
 		"reflect-metadata": "^0.1.13",
 		"rimraf": "^3.0.2",
-		"rxjs": "^7.2.0"
+		"rxjs": "^7.2.0",
+		"uuid4": "^2.0.3"
 	},
 	"devDependencies": {
 		"@nestjs/cli": "^9.0.0",
@@ -43,8 +45,10 @@
 		"@nestjs/testing": "^9.0.0",
 		"@types/express": "^4.17.13",
 		"@types/jest": "28.1.8",
+		"@types/luxon": "^3.2.0",
 		"@types/node": "^16.0.0",
 		"@types/supertest": "^2.0.11",
+		"@types/uuid4": "^2.0.0",
 		"@typescript-eslint/eslint-plugin": "^5.0.0",
 		"@typescript-eslint/parser": "^5.0.0",
 		"eslint": "^8.0.1",
