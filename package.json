@@ -19,10 +19,8 @@
 		"test:cov": "jest --coverage",
 		"test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
 		"test:e2e": "jest --config ./test/jest-e2e.json",
-		"database:migrate": "nest build && node ./dist/migrator/migrations.js up",
-		"database:migrate:drop": "node ./dist/migrator/migrations.js down",
-		"database:test-setup": "nest build && node ./dist/migrator/migrations-test.js up",
-		"database:test-teardown": "node ./dist/migrator/migrations-test.js down"
+		"database:migrate": "nest build && node ./dist/migrator/run-prod.js",
+		"database:test-setup": "nest build && node ./dist/migrator/run-test.js"
 	},
 	"dependencies": {
 		"@clickhouse/client": "^0.0.12",
