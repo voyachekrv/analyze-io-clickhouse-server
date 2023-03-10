@@ -8,6 +8,8 @@ import {
 	createClient
 } from '@clickhouse/client';
 import { InsertResult, QueryResult } from '@clickhouse/client/dist/connection';
+import { ClickhouseConfigType } from './clickhouse-config.type';
+import { Logger } from '@nestjs/common';
 
 /**
  * Сервис подключения к Clickhouse
@@ -22,22 +24,38 @@ export class ClickhouseService {
 	 * Сервис подключения к Clickhouse
 	 * @param config Конфиг подключения к базе данных
 	 */
-	constructor(
-		config:
-			| ClickHouseClientConfigOptions
-			| Promise<ClickHouseClientConfigOptions>
-	) {
-		if (config && typeof config['then'] === 'function') {
-			(config as Promise<ClickHouseClientConfigOptions>).then(config => {
-				this.client = createClient(config);
-			});
-		} else {
-			this.client = createClient(config as ClickHouseClientConfigOptions);
-		}
+	constructor(config: ClickhouseConfigType) {
+		this.connect(config).then();
+	}
 
-		this.client.ping().catch(e => {
-			throw new Error(e);
-		});
+	/**
+	 * Подключение к Clickhouse
+	 * @param config Конфиг подключения
+	 */
+	private async connect(config: ClickhouseConfigType) {
+		try {
+			if (config && typeof config['then'] === 'function') {
+				this.client = createClient(await config);
+			} else {
+				this.client = createClient(
+					config as ClickHouseClientConfigOptions
+				);
+			}
+
+			if (await this.client.ping()) {
+				Logger.log(
+					'Successfully connected to Clickhouse',
+					this.constructor.name
+				);
+			}
+		} catch (e) {
+			Logger.error(e, this.constructor.name);
+			await this.client.close();
+
+			setTimeout(async () => {
+				await this.connect(config);
+			}, 3000);
+		}
 	}
 
 	/**
