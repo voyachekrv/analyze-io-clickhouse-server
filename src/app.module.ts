@@ -1,3 +1,4 @@
+import { HealthcheckModule } from './healthcheck/healthcheck.module';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { InsertModule } from './insert/insert.module';
@@ -18,7 +19,8 @@ import { clickhouseClientFactory } from './clickhouse-client-factory';
 			inject: [ConfigService],
 			useFactory: clickhouseClientFactory
 		}),
-		InsertModule
+		InsertModule,
+		HealthcheckModule
 	],
 	controllers: [],
 	providers: []
